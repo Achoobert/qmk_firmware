@@ -1,1 +1,1 @@
-# The default keymap for bm40hsrgb
+# The Achoobert keymap for bm40hsrgb

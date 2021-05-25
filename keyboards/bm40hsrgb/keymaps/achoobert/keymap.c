@@ -27,6 +27,8 @@ enum layers {
 
 #define LOWER MO(_LOWER)
 #define RAISE MO(_RAISE)
+#define NAV MO(_NAV)
+#define READ MO(_READ)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -43,7 +45,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_COLMKD] = LAYOUT_planck_mit(
     KC_TAB,  KC_Q,    KC_W,    KC_F,    KC_P,    KC_B,    KC_J,    KC_L,    KC_U,    KC_Y,    KC_SCLN,    KC_BSPC,
-    KC_ESC,  KC_A,    KC_R,    KC_S,    KC_T,    KC_G,    KC_M,    KC_N,    KC_E,    KC_I,    KC_O, KC_QUOT,
+    KC_DEL,  KC_A,    KC_R,    KC_S,    KC_T,    KC_G,    LT(READ,KC_M),    KC_N,    KC_E,    KC_I,    LT(NAV,KC_O), KC_QUOT,
     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_D,    KC_V,    KC_K,    KC_H,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT ,
     RGB_TOG, KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
 ),
@@ -61,7 +63,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_LOWER] = LAYOUT_planck_mit(
     KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_CIRC, KC_AMPR,    KC_ASTR,    KC_LPRN, KC_RPRN, KC_BSPC,
-    KC_DEL,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_UNDS,    KC_PLUS,    KC_LCBR, KC_RCBR, KC_PIPE,
+    KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_UNDS,    KC_PLUS,    KC_LCBR, KC_RCBR, KC_PIPE,
     _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  S(KC_NUHS), S(KC_NUBS), KC_HOME, KC_END,  _______,
     _______, _______, _______, _______, _______, _______, _______,    KC_MNXT,    KC_VOLD, KC_VOLU, KC_MPLY
 ),
@@ -116,16 +118,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_NAV] = LAYOUT_planck_mit(
-    _______, KC_GRV,  KC_SLSH, KC_BSLS, KC_AMPR, _______, _______, KC_PSCR,  KC_UP, PSCREEN_APP, _______, KC_DEL ,
-    _______, KC_PLUS, KC_LCBR, KC_CBRL, KC_LPRN, _______, _______, KC_LEFT, KC_DOWN, KC_RIGHT, _______, KC_MPLY,
-    _______, KC_LCTL, KC_RCBR, F_CBRR,  KC_RPRN, _______, _______, _______,  _______,  _______, _______, _______,
+    _______, KC_GRV,  KC_SLSH, KC_BSLS, KC_AMPR, _______, _______, KC_PSCR,  KC_UP, _______, _______, KC_DEL ,
+    _______, KC_PLUS, KC_LCBR, KC_LCBR, KC_LPRN, _______, _______, KC_LEFT, KC_DOWN, KC_RIGHT, KC_TRNS, KC_MPLY,
+    _______, KC_LCTL, KC_RCBR, KC_RCBR,  KC_RPRN, _______, _______, _______,  _______,  _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______
 ),
 
 /* Read (hold 'm')
  *                      v------------------------RGB CONTROL--------------------v
  * ,-----------------------------------------------------------------------------------.
- * |      |  `   |  /   |  \   |  &   |      |      |      | pgup |      |      |      |
+ * |      |  `   |  /   |  \   |  &   |      |      | prnt | pgup |      |      |  del |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |  =   |  [   |   {  |  (   |      |   *  | home |pgdown|  end |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -135,11 +137,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_READ] = LAYOUT_planck_mit(
-    _______, _______, _______, _______, _______, _______, _______, _______, up,  _______, _______, KC_DEL ,
-    _______, _______, _______, _______, _______, _______, _______, home,  down,  end, _______, _______,
-    _______, _______, _______, _______, _______, _______, _______, _______,  _______,  _______, _______, _______,
+    _______, KC_GRV,  KC_SLSH, KC_BSLS, KC_AMPR, _______, _______, KC_PSCR, KC_PGUP,  _______, _______, KC_DEL ,
+    _______, KC_PLUS, KC_LCBR, KC_LCBR, KC_LPRN, _______, KC_TRNS, KC_HOME, KC_PGDN, KC_END, _______, _______,
+    _______, KC_LCTL, KC_RCBR, KC_RCBR, KC_RPRN, _______, _______, _______,  _______,  _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______
-), 
+),
 
 /* Plover layer (http://opensteno.org)
  * ,-----------------------------------------------------------------------------------.
@@ -151,17 +153,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * | Exit |      |      |   A  |   O  |             |   E  |   U  |      |      |      |
  * `-----------------------------------------------------------------------------------'
- */
 [_PLOVER] = LAYOUT_planck_grid(
     KC_1,    KC_1,    KC_1,    KC_1,    KC_1,    KC_1,    KC_1,    KC_1,    KC_1,    KC_1,    KC_1,    KC_1   ,
     XXXXXXX, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC,
     XXXXXXX, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
     EXT_PLV, XXXXXXX, XXXXXXX, KC_C,    KC_V,    XXXXXXX, XXXXXXX, KC_N,    KC_M,    XXXXXXX, XXXXXXX, XXXXXXX
 ),
+ */
 
 };
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+  return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST); //, _NAV, _READ
 }
 
