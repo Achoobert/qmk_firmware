@@ -1,14 +1,23 @@
 #include QMK_KEYBOARD_H
 #include "version.h"
 
+// to build
+// qmk compile -kb ergodone -km Achoobert
+
+// activate the hardware's writable mode with rightmost key of left side
+// https://github.com/qmk/qmk_firmware/blob/master/keyboards/ergodone/readme.md
+// need old ".\hid_bootloader_cli.exe"
+// ./hid_bootloader_cli.exe -mmcu=atmega32u4 ergodone_Achoobert.hex
+
 // TODO gaming layer
 // TODO nav layer
-// TODO print screen
+// Done! print screen
 
 
 #define BASE 0 // default layer
 #define SYMB 1 // symbols
 #define MDIA 2 // media keys
+#define GAME 3 // qerty gaming layout
 
 enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // can always be here
@@ -23,20 +32,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,--------------------------------------------------.           ,--------------------------------------------------.
  * |   =    |   1  |   2  |   3  |   4  |   5  | LEFT |           | RIGHT|   6  |   7  |   8  |   9  |   0  |   -    |
  * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
- * | Del    |   Q  |   W  |   F  |   P  |   B  |  L1  |           |  L1  |   J  |   L  |   U  |   Y  |   ;  |   \    |
+ * | Del    |   Q  |   W  |   F  |   P  |   B  |  L1  |           | Game |   J  |   L  |   U  |   Y  |   ;  |   \    |
  * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
  * | BkSp   |   A  |   R  |   S  |   T  |   G  |------|           |------|   M  |   N  |   E  |   I  |O / L2|' / Cmd |
  * |--------+------+------+------+------+------| Hyper|           | Meh  |------+------+------+------+------+--------|
- * | LShift |Z/Ctrl|X/Ctrl|C/Alt |   D  |   V  |      |           |      |   K  |   H  |   ,  |   .  |//Ctrl| RShift |
+ * | `/Symb |Z/Ctrl|X/Ctrl|C/Alt |   D  |   V  |      |           |      |   K  |   H  |   ,  |   .  |//Ctrl| RShift |
  * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   |Grv/L1|  '"  |AltShf| Left | Right|                                       |  Up  | Down |   [  |   ]  | ~L1  |
+ *   |lGAME |  '"  |AltShf| Left | Right|                                       |  Up  | Down |   [  |   ]  | ~L1  |
  *   `----------------------------------'                                       `----------------------------------'
  *                                        ,-------------.       ,-------------.
  *                                        | App  | LGui |       | Alt  |Ctrl/Esc|
  *                                 ,------|------|------|       |------+--------+------.
  *                                 |      |      | Home |       | PgUp |        |      |
- *                                 | Space|Backsp|------|       |------|  Tab   |Enter |
- *                                 |      |ace   | End  |       | PgDn |        |      |
+ *                                 | Space|LShift|------|       |------|  Tab   |Enter |
+ *                                 |      |      | End  |       | PgDn |        |      |
  *                                 `--------------------'       `----------------------'
  */
 // If it accepts an argument (i.e, is a function), it doesn't need KC_.
@@ -46,14 +55,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_EQL,         KC_1,         KC_2,   KC_3,   KC_4,   KC_5,   KC_LEFT,
         KC_DEL,         KC_Q,         KC_W,   KC_F,   KC_P,   KC_B,   TG(SYMB),
         KC_BSPC,        KC_A,         KC_R,   KC_S,   KC_T,   KC_G,
-        KC_LSFT,        CTL_T(KC_Z),  CTL_T(KC_X),   ALT_T(KC_C),   KC_D,   KC_V,   ALL_T(KC_NO),
-        LT(SYMB,KC_GRV),KC_QUOT,      LALT(KC_LSFT),  KC_LEFT,KC_RGHT,
+        LT(SYMB,KC_GRV),        CTL_T(KC_Z),  CTL_T(KC_X),   ALT_T(KC_C),   KC_D,   KC_V,   ALL_T(KC_NO),
+        TG(GAME),KC_QUOT,      LALT(KC_LSFT),  KC_LEFT,KC_RGHT,
                                               ALT_T(KC_APP),  KC_LGUI,
                                                               KC_HOME,
-                                               KC_SPC,KC_BSPC,KC_END,
+                                               KC_SPC,KC_LSFT,KC_END,
         // right hand
              KC_RGHT,     KC_6,   KC_7,  KC_8,   KC_9,   KC_0,             KC_MINS,
-             TG(SYMB),    KC_J,   KC_L,  KC_U,   KC_Y,   LT(MDIA,KC_SCLN), KC_BSLS,
+             TG(GAME),    KC_J,   KC_L,  KC_U,   KC_Y,   LT(MDIA,KC_SCLN), KC_BSLS,
                           KC_M,   KC_N,  KC_E,   KC_I,   LT(MDIA,KC_O),   GUI_T(KC_QUOT),
              MEH_T(KC_NO),KC_K,   KC_H,  KC_COMM,KC_DOT, CTL_T(KC_SLSH),   KC_RSFT,
                                   KC_UP, KC_DOWN,KC_LBRC,KC_RBRC,          TT(SYMB),
@@ -86,13 +95,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,---------------------------------------------------.           ,--------------------------------------------------.
  * |Version  |  F1  |  F2  |  F3  |  F4  |  F5  |      |           |      |  F6  |  F7  |  F8  |  F9  |  F10 |   F11  |
  * |---------+------+------+------+------+------+------|           |------+------+------+------+------+------+--------|
- * |         |   `  |   /  |   \  |   &  |      |      |           |      |   Up |   <  |   >  |   :  |   *  |   F12  |
+ * |         |   *  |   /  |   \  |   &  |  ~   |      |           |      |   Up |   7  |   8  |   9  |   *  |   F12  |
  * |---------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
- * |         |   +  |   [  |   {  |   (  |   *  |------|           |------| Down |   /  |   \  |   6  |   +  |        |
+ * |         |   |  |   [  |   {  |   (  |      |------|           |------| Down |   4  |   5  |   6  |   +  |        |
  * |---------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
- * |         |   %  |   ]  |   }  |   )  |      |      |           |      |   &  |   =  |   .  |   |  |   -  |        |
+ * |         |   %  |   ]  |   }  |   )  |      |      |           |      |   &  |   1  |   2  |   3  |   \  |        |
  * `---------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   | EPRM  |      |      |      |      |                                       |      |      |      |      |      |
+ *   | EPRM  |      |      |      |      |                                       |      |    . |   0  |   =  |      |
  *   `-----------------------------------'                                       `----------------------------------'
  *                                        ,-------------.       ,-------------.
  *                                        |Animat|      |       |Toggle|Solid |
@@ -164,6 +173,50 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        KC_TRNS,
        KC_TRNS, _______, KC_WBAK
 ),
+
+/* Keymap 0: Gaming layer
+ *
+ * ,--------------------------------------------------.           ,--------------------------------------------------.
+ * |   =    |   1  |   2  |   3  |   4  |   5  |      |           |      |   6  |   7  |   8  |   9  |   0  |   -    |
+ * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
+ * | Tab    |   Q  |   W  |   E  |   R  |   T  |      |           |      |   Y  |   U  |   I  |   O  |   P  |   \    |
+ * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
+ * | BkSp   |   A  |   S  |   D  |   F  |   G  |------|           |------|   H  |   J  |   K  |   L  |; / L2|' / Cmd |
+ * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
+ * |  Ctrl  |Z/Ctrl|   X  |   C  |   V  |   B  |      |           |      |   N  |   M  |   ,  |   .  |//Ctrl| RShift |
+ * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
+ *   |togOff|  '"  |  Alt | Left | Right|                                       |  Up  | Down |   [  |   ]  | ~L1  |
+ *   `----------------------------------'                                       `----------------------------------'
+ *                                        ,-------------.       ,-------------.
+ *                                        | App  | LGui |       | Alt  |Ctrl/Esc|
+ *                                 ,------|------|------|       |------+--------+------.
+ *                                 |      |      | Home |       | PgUp |        |      |
+ *                                 | Space|lShift|------|       |------|  Tab   |Enter |
+ *                                 |      |      | End  |       | PgDn |        |      |
+ *                                 `--------------------'       `----------------------'
+ */
+// If it accepts an argument (i.e, is a function), it doesn't need KC_.
+// Otherwise, it needs KC_*
+[GAME] = LAYOUT_ergodox(  // layer 0 : default
+        // left hand
+        KC_EQL,         KC_1,         KC_2,          KC_3,          KC_4,     KC_5,   KC_TRNS,
+        KC_TAB,         KC_Q,         KC_W,          KC_E,          KC_R,     KC_T,   KC_TRNS,
+        KC_BSPC,        KC_A,         KC_S,          KC_D,          KC_F,     KC_G,
+        KC_LCTL,        CTL_T(KC_Z),  CTL_T(KC_X),   ALT_T(KC_C),   KC_V,     KC_B,   KC_TRNS,
+        KC_TRNS,        KC_QUOT,      KC_LALT,       KC_LEFT,       KC_RGHT,
+                                               KC_TRNS,  KC_TRNS,
+                                                              KC_HOME,
+                                               KC_TRNS,KC_TRNS,KC_END,
+        // right hand
+             KC_TRNS,     KC_6,   KC_7,  KC_8,   KC_9,   KC_0,             KC_MINS,
+             KC_TRNS,     KC_Y,   KC_U,  KC_I,   KC_O,   KC_P,             KC_BSLS,
+                          KC_H,   KC_J,  KC_K,   KC_L,   LT(MDIA, KC_SCLN),GUI_T(KC_QUOT),
+             KC_TRNS,     KC_N,   KC_M,  KC_COMM,KC_DOT, CTL_T(KC_SLSH),   KC_RSFT,
+                                  KC_UP, KC_DOWN,KC_LBRC,KC_RBRC,          KC_TRNS,
+             KC_LALT,   CTL_T(KC_ESC),
+             KC_PGUP,
+             KC_PGDN,   KC_TAB,        KC_ENT
+    ),
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
