@@ -6,7 +6,8 @@
     "files.exclude": {
         "**/.build": true,
         "**/*.hex": true,
-        "**/*.bin": true
+        "**/*.bin": true,
+        "**/*.uf2": true
     },
     "files.associations": {
         "*.h": "c",
@@ -25,7 +26,15 @@
     },
     "python.formatting.provider": "yapf",
     "[json]": {
+<<<<<<< HEAD
 	    "editor.formatOnSave": false
     },
     "cmake.sourceDirectory": "/Users/achoobert/repos/qmk_firmware/lib/googletest"
+=======
+        "editor.formatOnSave": false
+    },
+    "clangd.arguments": [
+        "--header-insertion=never"
+    ]
+>>>>>>> qmkorg/master
 }
