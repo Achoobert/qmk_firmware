@@ -65,7 +65,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * esc/Shft|   Z  |   X  |   C  |   D  |   V  |   K  |   H  |   ,  |   .  |   /  |Entr/shft|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * | Ctrl |  GUI | Alt  |  COPY|Lower |    Space    |Raise | PASTE|  TOGGL| Hypr |  Meh |
+ * | Ctrl |  GUI | Alt  |  COPY|Lower |    Space    |Raise | PASTE|      | Hypr |  Meh |
  * `-----------------------------------------------------------------------------------'
  */
 // [_COLMKD] = LAYOUT_planck_mit(
@@ -78,7 +78,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_ESC,  KC_Q,    KC_W,    KC_F,    KC_P,    KC_B,    KC_J,    KC_L,    KC_U,    KC_Y,    KC_SCLN,    KC_BSPC,
     KC_DEL,  KC_A,    KC_R,    KC_S,    KC_T,    KC_G,    LT(READ,KC_M),    KC_N,    KC_E,    KC_I,    LT(NAV,KC_O), KC_QUOT,
     LT(KC_LSFT, KC_ESC), KC_Z,    KC_X,    KC_C,    KC_D,    KC_V,    KC_K,    KC_H,    KC_COMM, KC_DOT,  KC_SLSH, LT(KC_RSFT, KC_ENT),
-    KC_LCTL, KC_LGUI, KC_LALT, COPY, LT(LOWER, KC_TAB),   LT(NAV, KC_SPC),  LT(RAISE, KC_ENT), PASTE, TOGGL(), KC_HYPR, KC_MEH
+    KC_LCTL, KC_LGUI, KC_LALT, COPY, LT(LOWER, KC_TAB),   LT(NAV, KC_SPC),  LT(RAISE, KC_ENT), PASTE, _______, KC_HYPR, KC_MEH
 ),
 
 
@@ -213,3 +213,259 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST); //, _NAV, _READ
 }
 
+switch (keycode) {
+    case KC_TAB:
+      if (record->event.pressed && is_mac_with_base_layer_off()) {
+        uint8_t mods = get_mods();
+        uint8_t mod_state = mods & MOD_MASK_ALT;
+        if (get_mods() & mod_state) {
+          del_mods(mod_state);
+          add_mods(MOD_LCTL);
+          mac_alt_tab_on = true;
+        }
+
+        mod_state = mods & MOD_MASK_CTRL;
+        if (get_mods() & mod_state && !mac_alt_tab_on) {
+          del_mods(mod_state);
+          add_mods(MOD_LGUI);
+          mac_ctrl_on = true;
+        }
+      }
+      break;
+    case KC_LSFT:
+      if (record->event.pressed && is_mac_with_base_layer_off()) {
+        uint8_t mods = get_mods();
+        uint8_t mod_state = mods & MOD_MASK_AG;
+        if (get_mods() & mod_state) {
+          del_mods(mod_state);
+          add_mods(MOD_LGUI);
+          mac_gui_on = true;
+          SEND_STRING(SS_TAP(X_SPACE));
+          return false;
+        } else {
+          return true;
+        }
+      }
+      break;
+    case KC_LEFT:
+    case KC_RIGHT:
+      if (record->event.pressed && is_mac_with_base_layer_off()) {
+        /* && !mac_ctrl_on/!mac_alt_tab_on are required since setting the state while holding the key changes
+        the modifier from OS's perspective. As a result, just the pressed key cannot be the single source
+        of truth to determine which state we're in, and a separate bool is required */
+        uint8_t mods = get_mods();
+        uint8_t mod_state = mods & MOD_MASK_ALT;
+        //Allows Ctrl <-/-> on Mac if Ctrl Tab is already pressed
+        if (get_mods() & mod_state && mac_alt_tab_on && !mac_ctrl_on) {
+          del_mods(mod_state);
+          add_mods(MOD_LCTL);
+        }
+
+        mod_state = mods & MOD_MASK_CTRL;
+        if (get_mods() & mod_state && !mac_alt_tab_on) {
+          del_mods(mod_state);
+          add_mods(MOD_LALT);
+          mac_ctrl_on = true;
+        }
+      }
+      break;
+    case KC_DEL:
+      if (record->event.pressed && is_mac_with_base_layer_off()) {
+        uint8_t mod_state = get_mods() & MOD_MASK_CTRL;
+        if (get_mods() & mod_state) {
+          del_mods(mod_state);
+          add_mods(MOD_LALT);
+          mac_ctrl_on = true;
+        }
+      }
+      break;
+    case KC_LALT:
+      if (!record->event.pressed && is_mac_with_base_layer_off()) {
+        if (mac_alt_tab_on) {
+          unregister_mods(MOD_LCTL);
+          mac_alt_tab_on = false;
+          return false;
+        } else if (mac_gui_on) {
+          SEND_STRING(SS_UP(X_LGUI));
+          mac_gui_on = false;
+          return false;
+        }
+      }
+      break;
+    case KC_RALT:
+      if (!record->event.pressed && mac_alt_tab_on && is_mac_with_base_layer_off()) {
+        unregister_mods(MOD_LCTL);
+        mac_alt_tab_on = false;
+        return false;
+      }
+      break;
+    case KC_LCTL:
+    case KC_RCTL:
+      if (!record->event.pressed && mac_ctrl_on && is_mac_with_base_layer_off()) {
+        SEND_STRING(SS_UP(X_LGUI) SS_UP(X_LALT));
+        mac_ctrl_on = false;
+        return false;
+      }
+      break;
+
+    case KC_HOME:
+      if (record->event.pressed && is_mac_with_base_layer_off()) {
+        SEND_STRING(SS_LCTL(SS_TAP(X_LEFT)));
+        return false;
+      }
+      break;
+    case KC_END:
+      if (record->event.pressed && is_mac_with_base_layer_off()) {
+        SEND_STRING(SS_LCTL(SS_TAP(X_RIGHT)));
+        return false;
+      }
+      break;
+    case KC_BSPC:
+      if (record->event.pressed) {
+        if (char_to_del > 1) {
+          layer_off(GIT_C);
+          layer_off(GIT_S);
+          backspace_n_times(char_to_del);
+          char_to_del = 1;
+          return false;
+        }
+
+        if (is_mac_with_base_layer_off()) {
+          uint8_t mod_state = get_mods() & MOD_MASK_CTRL;
+          if (get_mods() & mod_state) {
+            del_mods(mod_state);
+            add_mods(MOD_LALT);
+            mac_ctrl_on = true;
+          }
+        }
+      }
+      break;
+
+    /* -------------------------------------------------------------------------
+     *                            CUSTOM MACROS
+     * ------------------------------------------------------------------------ */
+    case CTRL_CTV:
+      if (record->event.pressed) {
+        if ( get_mods() & MOD_MASK_SHIFT ) {
+          clear_mods();
+          SEND_STRING(SS_LCTL("ctv"));
+        } else {
+          SEND_STRING(SS_LCTL("ctv") SS_TAP(X_ENTER));
+        }
+      }
+      break;
+    case CTRL_LCTV:
+      if (record->event.pressed) {
+        if ( get_mods() & MOD_MASK_SHIFT ) {
+          //Firefox
+          clear_mods();
+          SEND_STRING(SS_LCTL("lcP"));
+          wait_ms(200);
+          SEND_STRING(SS_LCTL("v") SS_TAP(X_ENTER));
+        } else if ( get_mods() & MOD_MASK_CTRL ) {
+          //Chrome
+          clear_mods();
+          SEND_STRING(SS_LCTL("lcNv") SS_TAP(X_ENTER));
+        } else {
+          SEND_STRING(SS_LCTL("lctv"));
+        }
+      }
+      break;
+    case CTRL_CAV:
+      if (record->event.pressed) {
+        SEND_STRING(SS_LCTL("c" SS_TAP(X_TAB)));
+        wait_ms(50);
+        SEND_STRING(SS_LCTL("av"));
+      }
+      break;
+    case SARCASM:
+      if (record->event.pressed) {
+        sarcasm_on = !sarcasm_on;
+      }
+      break;
+
+    /* -------------------------------------------------------------------------
+     *                            OS TOGGLING
+     * ------------------------------------------------------------------------ */
+    case TOG_OS:
+      if (record->event.pressed) {
+        is_win = ! is_win;
+        led_show_current_os();
+      }
+      break;
+    case CTR_ALT:
+      if (record->event.pressed) {
+        send_string(key_down[is_win]);
+      } else {
+        send_string(key_up[is_win]);
+      }
+      break;
+    case OS_CTRL:
+      if (is_win) {
+        if (record->event.pressed) {
+          SEND_STRING(SS_DOWN(X_LCTL));
+        } else {
+          SEND_STRING(SS_UP(X_LCTL));
+        }
+      } else {
+        if (record->event.pressed) {
+          SEND_STRING(SS_DOWN(X_LGUI));
+        } else {
+          SEND_STRING(SS_UP(X_LGUI));
+        }
+      }
+      break;
+    case OS_WIN:
+      if (is_win) {
+        if (record->event.pressed) {
+          SEND_STRING(SS_DOWN(X_LGUI));
+        } else {
+          SEND_STRING(SS_UP(X_LGUI));
+        }
+      } else {
+        if (record->event.pressed) {
+          SEND_STRING(SS_DOWN(X_LCTL));
+        } else {
+          SEND_STRING(SS_UP(X_LCTL));
+        }
+      }
+      break;
+
+    /* -------------------------------------------------------------------------
+     *                            STRING MACROS
+     * ------------------------------------------------------------------------ */
+    // case :
+    //   if (record->event.pressed) {
+    //     send_string_remembering_length("");
+    //   }
+    //   break;
+    // case :
+    //   if (record->event.pressed) {
+    //     send_string_remembering_length("", "");
+    //   }
+    //   break;
+    case TILD_BLOCK:
+      if (record->event.pressed) {
+        SEND_STRING("```" SS_LSFT(SS_TAP(X_ENTER) SS_TAP(X_ENTER)) "```" SS_TAP(X_UP));
+        char_to_del = 4;
+      }
+      break;
+    case ADMINS:
+      if (record->event.pressed) {
+        send_shifted_strings_add("admin", "/aurora/status");
+      }
+      break;
+    case PRESCRIPTION:
+      if (record->event.pressed) {
+        SEND_STRING("55\t12122019\t");
+        char_to_del = 8;
+      }
+      break;
+    case FOURS:
+      if (record->event.pressed) {
+        SEND_STRING("4444333322221111\t1\t12\t21\t123\n");
+        char_to_del = 16;
+      }
+      break;
+      
+  

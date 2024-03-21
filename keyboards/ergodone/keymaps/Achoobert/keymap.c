@@ -1,4 +1,4 @@
-#include QMK_KEYBOARD_H
+`#include QMK_KEYBOARD_H
 #include "version.h"
 
 // to build
@@ -33,7 +33,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* Keymap 0: Basic layer
  *
  * ,--------------------------------------------------.           ,--------------------------------------------------.
- * |   =    |   1  |   2  |   3  |   4  |   5  | LEFT |           | RIGHT|   6  |   7  |   8  |   9  |   0  |   -    |
+ * |   =    |   1  |   2  |   3  |   4  |   5  | BASE |           | MAC  |   6  |   7  |   8  |   9  |   0  |   -    |
  * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
  * | Del    |   Q  |   W  |   F  |   P  |   B  |  L1  |           | Game |   J  |   L  |   U  |   Y  |   ;  |   \    |
  * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
@@ -44,11 +44,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *   |lGAME |  '"  |AltShf| Left | Right|                                       |  Up  | Down |   [  |   ]  | ~L1  |
  *   `----------------------------------'                                       `----------------------------------'
  *                                        ,-------------.       ,-------------.
- *                                        | App  | LGui |       | Alt  |Ctrl/Esc|
+ *                                        | App  | Tab  |       | Alt  |Ctrl/Esc|
  *                                 ,------|------|------|       |------+--------+------.
  *                                 |      |      | Home |       | PgUp |        |      |
- *                                 | Space|LShift|------|       |------|  Tab   |Enter |
- *                                 |      |      | End  |       | PgDn |        |      |
+ *                                 | Space|LShift|------|       |------|  LGui  |Enter |
+ *                                 |      |      | End  |       | PgDn |  CMD   |      |
  *                                 `--------------------'       `----------------------'
  */
 // If it accepts an argument (i.e, is a function), it doesn't need KC_.
@@ -60,7 +60,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_BSPC,        KC_A,         KC_R,   KC_S,   KC_T,   KC_G,
         LT(SYMB,KC_GRV),        CTL_T(KC_Z),  CTL_T(KC_X),   ALT_T(KC_C),   KC_D,   KC_V,   ALL_T(KC_NO),
         TG(GAME),KC_QUOT,      LALT(KC_LSFT),  KC_LEFT,KC_RGHT,
-                                              ALT_T(KC_APP),  KC_LGUI,
+                                              ALT_T(KC_APP),  KC_TAB,
                                                               KC_HOME,
                                                KC_SPC,KC_LSFT,KC_END,
         // right hand
@@ -71,7 +71,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                   KC_UP, KC_DOWN,KC_LBRC,KC_RBRC,          TT(SYMB),
              KC_LALT,        CTL_T(KC_ESC),
              KC_PGUP,
-             KC_PGDN,KC_TAB, KC_ENT
+             KC_PGDN,KC_LGUI, KC_ENT
     ),
 /* Keymap 1: Symbol Layer
  *
@@ -138,7 +138,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* Keymap 2: Media and mouse keys
  *
  * ,---------------------------------------------------.          ,--------------------------------------------------.
- * |         |  F1  |  F2  |  F3  |  F4  |  F5  |      |          |      |      |      |      |      |      |        |
+ * |         |  F1  |  F2  |  F3  |  F4  |  F5  |      |          |      |  F6  |  F7  |      |      |      |        |
  * |---------+------+------+------+------+------+------|          |------+------+------+------+------+------+--------|
  * |         |   `  |   /  |   \  |   &  |      |      |          |      |      |Prntsc|   ^  |      |      |        |
  * |---------+------+------+------+------+------|      |          |      |------+------+------+------+------+--------|
